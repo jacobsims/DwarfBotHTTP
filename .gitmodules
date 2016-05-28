@@ -1,0 +1,3 @@
+[submodule "DwarfBot"]
+	path = DwarfBot
+	url = https://github.com/Choco31415/DwarfBot

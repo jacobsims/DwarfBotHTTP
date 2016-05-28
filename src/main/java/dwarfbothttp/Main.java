@@ -1,7 +1,7 @@
-package io.github.jacobsims.dwarfbothttp;
+package dwarfbothttp;
 
 public class Main {
 	public static void main(String[] args) {
-		// write your code here
+		System.out.println("Run worked.");
 	}
 }
