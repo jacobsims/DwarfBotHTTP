@@ -17,6 +17,7 @@ repositories {
 dependencies {
     compile project(':DwarfBot')
     compile 'com.sparkjava:spark-core:2.5'
+    compile 'com.sparkjava:spark-template-velocity:2.3'
     testCompile 'junit:junit:4.+'
 }
 

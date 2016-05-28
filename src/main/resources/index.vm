@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>DwarfBotHTTP</title>
+    </head>
+    <body>
+        <form method="post" enctype="multipart/form-data" action="/upload">
+            <input type="file" name="to_convert">
+            <input type="submit" value="Upload picture">
+        </form>
+    </body>
+</html>
