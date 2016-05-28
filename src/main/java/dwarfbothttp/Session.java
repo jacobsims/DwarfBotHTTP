@@ -49,7 +49,7 @@ public class Session {
 			tilesetDetected = fitter.extractTileset();
 			stage.incrementAndGet();
 			System.out.println(stage);
-			decodedImage = fitter.decodeImage();
+			decodedImage = fitter.readTiles(tilesetDetected.getBasex(), tilesetDetected.getBasey(), tilesetDetected.getTileset());
 			stage.incrementAndGet();
 			System.out.println(stage);
 		});
@@ -62,6 +62,27 @@ public class Session {
 
 	public boolean isDecodingFinished() {
 		return stage.get() == 3;
+	}
+
+	public BufferedImage renderToTileset(Tileset tileset) {
+		if (!isDecodingFinished()) {
+			throw new IllegalStateException("Cannot render an image if it is not decoded yet!");
+		}
+		int tilesetId = -1;
+		for (int i = 0; i < supportedTilesets.size(); i++) {
+			if (tileset == supportedTilesets.get(i)) {
+				tilesetId = i;
+				break;
+			}
+		}
+		if (tilesetId == -1) {
+			throw new IllegalArgumentException("Tileset not on the list of supported tilesets");
+		}
+		return fitter.renderImage(decodedImage, tilesetId);
+	}
+
+	public static ArrayList<Tileset> getSupportedTilesets() {
+		return supportedTilesets;
 	}
 
 	static {

@@ -1,9 +1,12 @@
 package dwarfbothttp;
 
+import java.awt.image.BufferedImage;
 import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
+
+import Code.Tileset;
 import spark.ModelAndView;
 import spark.Request;
 import spark.Response;
@@ -11,6 +14,7 @@ import spark.Spark;
 import spark.template.velocity.VelocityTemplateEngine;
 
 public class Main {
+	//TODO: Switch to a GET param instead of cookies so you can use multiple tabs
 	private static final String SESSION_COOKIE_NAME = "sessionID";
 
 	private static SessionManager sessionManager;
@@ -68,7 +72,42 @@ public class Main {
 			}
 
 			HashMap<String, Object> model = new HashMap<String, Object>();
+			model.put("tilesets", Session.getSupportedTilesets());
 			return velocityTemplateEngine.render(new ModelAndView(model, "encodeimage.vm"));
+		});
+		Spark.get("/encodedimage.png", (request, response) -> {
+			String sessionId = getSessionIdForRequest(request, response);
+			Session s = sessionManager.get(sessionId);
+			Tileset tileset = null;
+			for (Tileset t : Session.getSupportedTilesets()) {
+				if (t.getImagePath().equals(request.queryParams("tileset"))) {
+					tileset = t;
+					break;
+				}
+			}
+
+			try {
+				BufferedImage renderedImage = null;
+				try {
+					renderedImage = s.renderToTileset(tileset);
+				} catch (IllegalArgumentException e) {
+					errorOutResponse(404, "Tileset not found!");
+				} catch (IllegalStateException e) {
+					errorOutResponse(400, "Your image is not decoded yet! Be patient.");
+				}
+
+				if (renderedImage == null) {
+					errorOutResponse(500, "Internal server error");
+				}
+
+				response.type("image/png");
+				OutputStream outputStream = response.raw().getOutputStream();
+				ImageIO.write(renderedImage, "png", outputStream);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+
+			return response;
 		});
 	}
 

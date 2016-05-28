@@ -7,7 +7,13 @@
 <body>
 <p>Image decoded successfully!</p>
 <p>Choose a tileset to convert to:</p>
-<form>
+<form action="/encodedimage.png" method="get">
+    <select name="tileset">
+        #foreach( $tileset in $tilesets )
+            <option value="${tileset.ImagePath}">${tileset.ImagePath}</option>
+        #end
+    </select>
+    <input type="submit" value="Render">
 </form>
 </body>
 </html>
