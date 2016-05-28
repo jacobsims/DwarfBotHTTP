@@ -2,6 +2,7 @@ package dwarfbothttp;
 
 import java.io.OutputStream;
 import java.util.HashMap;
+import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 import spark.ModelAndView;
 import spark.Request;
@@ -16,6 +17,9 @@ public class Main {
 
 	public static void main(String[] args) {
 		sessionManager = new SessionManager();
+
+		//TODO: Fix this once Alex's changes are merged
+		Code.Main.logger = Logger.getGlobal();
 
 		Spark.staticFiles.location("/static");
 		VelocityTemplateEngine velocityTemplateEngine = new VelocityTemplateEngine();
@@ -51,6 +55,7 @@ public class Main {
 		Spark.get("/convertpage", (request, response) -> {
 			String sessionId = getSessionIdForRequest(request, response);
 			Session s = sessionManager.get(sessionId);
+			s.startConversion();
 
 			HashMap<String, Object> model = new HashMap<String, Object>();
 			return velocityTemplateEngine.render(new ModelAndView(model, "convertpage.vm"));
