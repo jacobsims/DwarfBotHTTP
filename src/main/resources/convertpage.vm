@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>DwarfBotHTTP</title>
+    <link rel="stylesheet" type="text/css" href="/style.css">
+</head>
+<body>
+<p>Image uploaded successfully!</p>
+<img src="/uploadedimage.png">
+</body>
+</html>
