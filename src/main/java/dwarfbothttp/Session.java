@@ -60,6 +60,10 @@ public class Session {
 		return toConvert;
 	}
 
+	public boolean isDecodingFinished() {
+		return stage.get() == 3;
+	}
+
 	static {
 		TilesetManager tilesetManager = new TilesetManager();
 		supportedTilesets = tilesetManager.getTilesets();

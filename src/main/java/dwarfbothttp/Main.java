@@ -60,6 +60,16 @@ public class Main {
 			HashMap<String, Object> model = new HashMap<String, Object>();
 			return velocityTemplateEngine.render(new ModelAndView(model, "convertpage.vm"));
 		});
+		Spark.get("/encodeimage", (request, response) -> {
+			String sessionId = getSessionIdForRequest(request, response);
+			Session s = sessionManager.get(sessionId);
+			if (!s.isDecodingFinished()) {
+				errorOutResponse(400, "Your image is not decoded yet! Be patient.");
+			}
+
+			HashMap<String, Object> model = new HashMap<String, Object>();
+			return velocityTemplateEngine.render(new ModelAndView(model, "encodeimage.vm"));
+		});
 	}
 
 	private static void errorOutResponse(int status, String message) {

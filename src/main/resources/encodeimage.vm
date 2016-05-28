@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>DwarfBotHTTP</title>
+    <link rel="stylesheet" type="text/css" href="/style.css">
+</head>
+<body>
+<p>Image decoded successfully!</p>
+<p>Choose a tileset to convert to:</p>
+<form>
+</form>
+</body>
+</html>
