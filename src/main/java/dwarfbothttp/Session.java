@@ -45,13 +45,10 @@ public class Session {
 			//TODO: Allow `artistic` mode (checkbox in the first form)
 			fitter.loadImageForConverting(toConvert);
 			stage.incrementAndGet();
-			System.out.println(stage);
 			tilesetDetected = fitter.extractTileset();
 			stage.incrementAndGet();
-			System.out.println(stage);
 			decodedImage = fitter.readTiles(tilesetDetected.getBasex(), tilesetDetected.getBasey(), tilesetDetected.getTileset());
 			stage.incrementAndGet();
-			System.out.println(stage);
 		});
 		conversionMainThread.start();
 	}
