@@ -38,7 +38,7 @@ public class Session {
 		}
 	}
 
-	public void startConversion() {
+	public void startDecoding() {
 		stage = new AtomicInteger(0);
 		fitter = new TilesetFitter(supportedTilesets, false);
 		conversionMainThread = new Thread(() -> {

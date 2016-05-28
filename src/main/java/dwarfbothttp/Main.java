@@ -55,7 +55,7 @@ public class Main {
 		Spark.get("/convertpage", (request, response) -> {
 			String sessionId = getSessionIdForRequest(request, response);
 			Session s = sessionManager.get(sessionId);
-			s.startConversion();
+			s.startDecoding();
 
 			HashMap<String, Object> model = new HashMap<String, Object>();
 			return velocityTemplateEngine.render(new ModelAndView(model, "convertpage.vm"));
