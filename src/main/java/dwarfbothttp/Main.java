@@ -86,26 +86,22 @@ public class Main {
 				}
 			}
 
+			BufferedImage renderedImage = null;
 			try {
-				BufferedImage renderedImage = null;
-				try {
-					renderedImage = s.renderToTileset(tileset);
-				} catch (IllegalArgumentException e) {
-					errorOutResponse(404, "Tileset not found!");
-				} catch (IllegalStateException e) {
-					errorOutResponse(400, "Your image is not decoded yet! Be patient.");
-				}
-
-				if (renderedImage == null) {
-					errorOutResponse(500, "Internal server error");
-				}
-
-				response.type("image/png");
-				OutputStream outputStream = response.raw().getOutputStream();
-				ImageIO.write(renderedImage, "png", outputStream);
-			} catch (Exception e) {
-				e.printStackTrace();
+				renderedImage = s.renderToTileset(tileset);
+			} catch (IllegalArgumentException e) {
+				errorOutResponse(404, "Tileset not found!");
+			} catch (IllegalStateException e) {
+				errorOutResponse(400, "Your image is not decoded yet! Be patient.");
 			}
+
+			if (renderedImage == null) {
+				errorOutResponse(500, "Internal server error");
+			}
+
+			response.type("image/png");
+			OutputStream outputStream = response.raw().getOutputStream();
+			ImageIO.write(renderedImage, "png", outputStream);
 
 			return response;
 		});
