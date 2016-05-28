@@ -3,7 +3,7 @@ package dwarfbothttp;
 import java.awt.image.BufferedImage;
 import java.io.OutputStream;
 import java.util.HashMap;
-import java.util.logging.Logger;
+import java.util.logging.Level;
 import javax.imageio.ImageIO;
 
 import Code.Tileset;
@@ -22,8 +22,8 @@ public class Main {
 	public static void main(String[] args) {
 		sessionManager = new SessionManager();
 
-		//TODO: Fix this once Alex's changes are merged
-		Code.Main.logger = Logger.getGlobal();
+		Code.Main.setupLogger();
+		Code.Main.logger.getHandlers()[0].setLevel(Level.WARNING);
 
 		Spark.staticFiles.location("/static");
 		VelocityTemplateEngine velocityTemplateEngine = new VelocityTemplateEngine();
