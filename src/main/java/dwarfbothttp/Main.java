@@ -105,6 +105,12 @@ public class Main {
 
 			return response;
 		});
+		Spark.get("/decodingstatus.json", (request, response) -> {
+			String sessionId = getSessionIdForRequest(request, response);
+			Session s = sessionManager.get(sessionId);
+			response.type("application/json");
+			return s.statusJson();
+		});
 	}
 
 	private static void errorOutResponse(int status, String message) {

@@ -9,10 +9,13 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.imageio.ImageIO;
 import javax.servlet.MultipartConfigElement;
 import javax.servlet.ServletException;
+
+import com.google.gson.Gson;
 import spark.Request;
 
 /**
@@ -20,6 +23,7 @@ import spark.Request;
  */
 public class Session {
 	private static ArrayList<Tileset> supportedTilesets; // Use one set of these for all sessions.
+	private static Gson gson; // Says it is thread safe.
 
 	private BufferedImage toConvert;
 	private Thread conversionMainThread;
@@ -51,6 +55,14 @@ public class Session {
 			stage.incrementAndGet();
 		});
 		conversionMainThread.start();
+	}
+
+	public String statusJson() {
+		HashMap<String, Integer> statusMap = new HashMap<>();
+		statusMap.put("loadImageForConverting", ((stage != null && stage.get() > 0) ? 100 : 0));
+		statusMap.put("extractTileset", 100 * fitter.getNumTilesetChecksComplete() / supportedTilesets.size());
+		statusMap.put("readTiles", ((stage != null && stage.get() > 2) ? 100 : 0));
+		return gson.toJson(statusMap);
 	}
 
 	public BufferedImage getToConvert() {
@@ -85,5 +97,6 @@ public class Session {
 	static {
 		TilesetManager tilesetManager = new TilesetManager();
 		supportedTilesets = tilesetManager.getTilesets();
+		gson = new Gson();
 	}
 }
