@@ -9,6 +9,7 @@ import spark.template.velocity.VelocityTemplateEngine;
 
 public class Main {
 	public static void main(String[] args) {
+		Spark.staticFiles.location("/static");
 		VelocityTemplateEngine velocityTemplateEngine = new VelocityTemplateEngine();
 
 		Spark.get("/", (request, response) -> {

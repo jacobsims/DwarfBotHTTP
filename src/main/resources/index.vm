@@ -2,6 +2,7 @@
 <html>
     <head>
         <title>DwarfBotHTTP</title>
+        <link rel="stylesheet" type="text/css" href="/style.css">
     </head>
     <body>
         <form method="post" enctype="multipart/form-data" action="/upload">
