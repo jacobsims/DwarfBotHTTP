@@ -19,7 +19,8 @@ public class Session {
 		request.attribute("org.eclipse.jetty.multipartConfig", new MultipartConfigElement((String)null));
 		try (InputStream inputStream = request.raw().getPart("to_convert").getInputStream()) {
 			toConvert = ImageIO.read(inputStream);
-		} catch (IOException|ServletException e) {
+			toConvert.getData();
+		} catch (IOException|ServletException|NullPointerException e) {
 			throw new UploadFailedException("Could not set image for the session from your upload.", e);
 		}
 	}

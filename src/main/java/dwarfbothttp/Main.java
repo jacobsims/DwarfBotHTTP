@@ -1,14 +1,8 @@
 package dwarfbothttp;
 
-import java.awt.image.BufferedImage;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.HashMap;
-import java.util.Random;
 import javax.imageio.ImageIO;
-import javax.imageio.ImageWriter;
-import javax.imageio.stream.ImageOutputStream;
-import javax.servlet.MultipartConfigElement;
 import spark.ModelAndView;
 import spark.Request;
 import spark.Response;
@@ -33,15 +27,12 @@ public class Main {
 		}, velocityTemplateEngine);
 		Spark.post("/upload", (request, response) -> {
 			String sessionId = getSessionIdForRequest(request, response);
-			if (sessionId == null) {
-				return response;
-			}
 			Session s = sessionManager.get(sessionId);
 
 			try {
 				s.setImageFromUpload(request);
 			} catch (UploadFailedException e) {
-				return errorOutResponse(response, 400, "Uploading the image failed.");
+				errorOutResponse(400, "Uploading the image failed.");
 			}
 
 			response.redirect("/convertpage");
@@ -49,9 +40,6 @@ public class Main {
 		});
 		Spark.get("/uploadedimage.png", (request, response) -> {
 			String sessionId = getSessionIdForRequest(request, response);
-			if (sessionId == null) {
-				return response;
-			}
 			Session s = sessionManager.get(sessionId);
 
 			response.type("image/png");
@@ -62,9 +50,6 @@ public class Main {
 		});
 		Spark.get("/convertpage", (request, response) -> {
 			String sessionId = getSessionIdForRequest(request, response);
-			if (sessionId == null) {
-				return response;
-			}
 			Session s = sessionManager.get(sessionId);
 
 			HashMap<String, Object> model = new HashMap<String, Object>();
@@ -72,19 +57,19 @@ public class Main {
 		});
 	}
 
-	private static Response errorOutResponse(Response response, int status, String message) {
-		response.status(status);
+	private static void errorOutResponse(int status, String message) {
 		//TODO: Make this more friendly.
-		response.body(message);
-		return response;
+		String responseBody = message;
+
+		// Throws an exception that stops execution of the current route.
+		Spark.halt(status, responseBody);
 	}
 
 	private static String getSessionIdForRequest(Request request, Response response) {
 		String id = request.cookie(SESSION_COOKIE_NAME);
 		if (id == null || sessionManager.get(id) == null) {
 			response.removeCookie(SESSION_COOKIE_NAME);
-			errorOutResponse(response, 404, "Session not found.");
-			return null;
+			errorOutResponse(404, "Session not found.");
 		}
 		return id;
 	}
