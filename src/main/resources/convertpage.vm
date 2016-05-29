@@ -8,16 +8,13 @@
     <script src="/decodingstatus.js"></script>
 </head>
 <body onload="startStatusUpdates()">
-<a href="/" class="header-link">
-    <div class="header">
-        <img src="/icon64.png" class="header-icon">
-        <span class="header-title">DwarfBotHTTP</span>
+#include("header.vm")
+<div class="content-container">
+    <p>Image uploaded successfully!</p>
+    <img src="/${session}/uploadedimage.png" class="uploaded-display">
+    <div id="decodingstatus-container">
+        <!-- Filled by JavaScript -->
     </div>
-</a>
-<p>Image uploaded successfully!</p>
-<img src="/${session}/uploadedimage.png" class="uploaded-display">
-<div id="decodingstatus-container">
-    <!-- Filled by JavaScript -->
 </div>
 </body>
 </html>

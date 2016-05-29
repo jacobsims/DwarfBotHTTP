@@ -3,6 +3,7 @@ body {
     margin: 0;
     padding: 0;
     font-family: Georgia;
+    font-size: 16px;
 }
 
 p, form {
@@ -13,8 +14,7 @@ p, form {
 .progressbar-outer {
     background: #333333;
     height: 8px;
-    width: 500px;
-    max-width: 100%;
+    width: 100%;
 }
 .progressbar-inner {
     background: #5B91E3;
@@ -22,20 +22,19 @@ p, form {
     max-width: 100%;
 }
 
-.uploaded-display {
+.uploaded-display, .demo-display {
     max-width: 100%;
     display: block;
     margin: 0 auto;
 }
 
 .header-icon {
-    vertical-align: middle;
+    float: left;
+    margin-left: 10px;
 }
 
 .header {
     background-color: black;
-    text-align: center;
-    line-height: 64px;
     padding: 4px 0;
     text-decoration: none;
 }
@@ -44,8 +43,35 @@ p, form {
     color: white;
     margin: 0 10px;
     font-size: 20px;
+    line-height: 32px;
 }
 
 .header-link {
     text-decoration: none;
+}
+
+.header-github {
+    color: #bbbbbb;
+    font-size: 13px;
+    line-height: 32px;
+    margin: 0 10px;
+}
+
+.header-github a {
+    color: #bbbbff;
+    text-decoration: none;
+}
+
+.header-container {
+    max-width: 700px;
+    margin: 0 auto;
+}
+
+.content-container {
+    max-width: 700px;
+    margin: 0 auto;
+}
+
+.clear {
+    clear: both;
 }
