@@ -17,6 +17,8 @@ public class Main {
 	private static SessionManager sessionManager;
 
 	public static void main(String[] args) {
+		System.setProperty("java.awt.headless", "true");
+
 		sessionManager = new SessionManager();
 
 		Code.Main.setupLogger();
