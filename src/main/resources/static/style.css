@@ -5,7 +5,7 @@ body {
     font-family: Georgia;
 }
 
-p {
+p, form {
     box-sizing: border-box;
     margin: 10px;
 }
@@ -26,4 +26,26 @@ p {
     max-width: 100%;
     display: block;
     margin: 0 auto;
+}
+
+.header-icon {
+    vertical-align: middle;
+}
+
+.header {
+    background-color: black;
+    text-align: center;
+    line-height: 64px;
+    padding: 4px 0;
+    text-decoration: none;
+}
+
+.header-title {
+    color: white;
+    margin: 0 10px;
+    font-size: 20px;
+}
+
+.header-link {
+    text-decoration: none;
 }

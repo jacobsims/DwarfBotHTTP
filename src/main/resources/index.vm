@@ -1,14 +1,20 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <title>DwarfBotHTTP</title>
-        <link rel="stylesheet" type="text/css" href="/style.css">
-        <meta name="viewport" content="user-scalable=yes,width=device-width" />
-    </head>
-    <body>
-        <form method="post" enctype="multipart/form-data" action="/${session}/upload">
-            <input type="file" name="to_convert">
-            <input type="submit" value="Upload picture">
-        </form>
-    </body>
+<head>
+    <title>DwarfBotHTTP</title>
+    <link rel="stylesheet" type="text/css" href="/style.css">
+    <meta name="viewport" content="user-scalable=yes,width=device-width" />
+</head>
+<body>
+<a href="/" class="header-link">
+    <div class="header">
+        <img src="/icon64.png" class="header-icon">
+        <span class="header-title">DwarfBotHTTP</span>
+    </div>
+</a>
+<form method="post" enctype="multipart/form-data" action="/${session}/upload">
+    <input type="file" name="to_convert">
+    <input type="submit" value="Upload picture">
+</form>
+</body>
 </html>
