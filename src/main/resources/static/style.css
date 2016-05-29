@@ -1,13 +1,29 @@
 body {
     background: #dddddd;
+    margin: 0;
+    padding: 0;
+    font-family: Georgia;
+}
+
+p {
+    box-sizing: border-box;
+    margin: 10px;
 }
 
 .progressbar-outer {
     background: #333333;
     height: 8px;
     width: 500px;
+    max-width: 100%;
 }
 .progressbar-inner {
     background: #5B91E3;
     height: 100%;
+    max-width: 100%;
+}
+
+.uploaded-display {
+    max-width: 100%;
+    display: block;
+    margin: 0 auto;
 }
