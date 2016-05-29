@@ -3,9 +3,13 @@
 <head>
     <title>DwarfBotHTTP</title>
     <link rel="stylesheet" type="text/css" href="/style.css">
+    <script src="/decodingstatus.js"></script>
 </head>
-<body>
+<body onload="startStatusUpdates()">
 <p>Image uploaded successfully!</p>
 <img src="/uploadedimage.png">
+<div id="decodingstatus-container">
+    <!-- Filled by JavaScript -->
+</div>
 </body>
 </html>
