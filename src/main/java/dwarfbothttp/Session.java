@@ -43,6 +43,10 @@ public class Session {
 	}
 
 	public void startDecoding() {
+		if (stage != null) {
+			// We have already started decoding. No need to start it over.
+			return;
+		}
 		stage = new AtomicInteger(0);
 		fitter = new TilesetFitter(supportedTilesets, false);
 		conversionMainThread = new Thread(() -> {
