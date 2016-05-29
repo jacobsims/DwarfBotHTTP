@@ -8,6 +8,6 @@ Requires Java 8
 
 ```sh
 $ git clone --recursive 'https://github.com/jacobsims/DwarfBotHTTP.git'
-$ cd DwarfBot
+$ cd DwarfBotHTTP
 $ ./gradlew run # Now go to http://localhost:4567
 ```
