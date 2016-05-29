@@ -7,7 +7,7 @@
 <body>
 <p>Image decoded successfully!</p>
 <p>Choose a tileset to convert to:</p>
-<form action="/encodedimage.png" method="get">
+<form action="/${session}/encodedimage.png" method="get">
     <select name="tileset">
         #foreach( $tileset in $tilesets )
             <option value="${tileset.ImagePath}">${tileset.ImagePath}</option>

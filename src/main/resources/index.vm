@@ -5,7 +5,7 @@
         <link rel="stylesheet" type="text/css" href="/style.css">
     </head>
     <body>
-        <form method="post" enctype="multipart/form-data" action="/upload">
+        <form method="post" enctype="multipart/form-data" action="/${session}/upload">
             <input type="file" name="to_convert">
             <input type="submit" value="Upload picture">
         </form>

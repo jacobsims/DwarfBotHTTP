@@ -24,7 +24,7 @@ function updatePage(j) {
     
     var done = j['loadImageForConverting'] === 100 && j['extractTileset'] === 100 && j['readTiles'] === 100;
     if (done) {
-        window.location.href = '/encodeimage';
+        window.location.href = '/' + session + '/encodeimage';
     }
     
     // Do we need another update?
@@ -44,6 +44,6 @@ function sendUpdateRequest() {
             }
         }
     }
-    httpRequest.open('GET', '/decodingstatus.json', true);
+    httpRequest.open('GET', '/' + session + '/decodingstatus.json', true);
     httpRequest.send();
 }

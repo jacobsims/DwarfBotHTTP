@@ -29,11 +29,12 @@ public class Main {
 		VelocityTemplateEngine velocityTemplateEngine = new VelocityTemplateEngine();
 
 		Spark.get("/", (request, response) -> {
-			response.cookie(SESSION_COOKIE_NAME, sessionManager.addNewSession());
+			String sessionId = sessionManager.addNewSession();
 			HashMap<String, Object> model = new HashMap<String, Object>();
+			model.put("session", sessionId);
 			return new ModelAndView(model, "index.vm");
 		}, velocityTemplateEngine);
-		Spark.post("/upload", (request, response) -> {
+		Spark.post("/:session/upload", (request, response) -> {
 			String sessionId = getSessionIdForRequest(request, response);
 			Session s = sessionManager.get(sessionId);
 
@@ -43,10 +44,10 @@ public class Main {
 				errorOutResponse(400, "Uploading the image failed.");
 			}
 
-			response.redirect("/convertpage");
+			response.redirect("/" + sessionId + "/convertpage");
 			return response;
 		});
-		Spark.get("/uploadedimage.png", (request, response) -> {
+		Spark.get("/:session/uploadedimage.png", (request, response) -> {
 			String sessionId = getSessionIdForRequest(request, response);
 			Session s = sessionManager.get(sessionId);
 
@@ -56,15 +57,16 @@ public class Main {
 
 			return response;
 		});
-		Spark.get("/convertpage", (request, response) -> {
+		Spark.get("/:session/convertpage", (request, response) -> {
 			String sessionId = getSessionIdForRequest(request, response);
 			Session s = sessionManager.get(sessionId);
 			s.startDecoding();
 
 			HashMap<String, Object> model = new HashMap<String, Object>();
+			model.put("session", sessionId);
 			return velocityTemplateEngine.render(new ModelAndView(model, "convertpage.vm"));
 		});
-		Spark.get("/encodeimage", (request, response) -> {
+		Spark.get("/:session/encodeimage", (request, response) -> {
 			String sessionId = getSessionIdForRequest(request, response);
 			Session s = sessionManager.get(sessionId);
 			if (!s.isDecodingFinished()) {
@@ -72,10 +74,11 @@ public class Main {
 			}
 
 			HashMap<String, Object> model = new HashMap<String, Object>();
+			model.put("session", sessionId);
 			model.put("tilesets", Session.getSupportedTilesets());
 			return velocityTemplateEngine.render(new ModelAndView(model, "encodeimage.vm"));
 		});
-		Spark.get("/encodedimage.png", (request, response) -> {
+		Spark.get("/:session/encodedimage.png", (request, response) -> {
 			String sessionId = getSessionIdForRequest(request, response);
 			Session s = sessionManager.get(sessionId);
 			Tileset tileset = null;
@@ -105,7 +108,7 @@ public class Main {
 
 			return response;
 		});
-		Spark.get("/decodingstatus.json", (request, response) -> {
+		Spark.get("/:session/decodingstatus.json", (request, response) -> {
 			String sessionId = getSessionIdForRequest(request, response);
 			Session s = sessionManager.get(sessionId);
 			response.type("application/json");
@@ -122,10 +125,9 @@ public class Main {
 	}
 
 	private static String getSessionIdForRequest(Request request, Response response) {
-		String id = request.cookie(SESSION_COOKIE_NAME);
+		String id = request.params(":session");
 		if (id == null || sessionManager.get(id) == null) {
-			response.removeCookie(SESSION_COOKIE_NAME);
-			errorOutResponse(404, "Session not found.");
+			response.redirect("/");
 		}
 		return id;
 	}
