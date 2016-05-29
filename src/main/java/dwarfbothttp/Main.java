@@ -19,6 +19,8 @@ public class Main {
 	public static void main(String[] args) {
 		System.setProperty("java.awt.headless", "true");
 
+		addInterruptHandler();
+
 		sessionManager = new SessionManager();
 
 		Code.Main.setupLogger();
@@ -113,6 +115,12 @@ public class Main {
 			response.type("application/json");
 			return s.statusJson();
 		});
+	}
+
+	private static void addInterruptHandler() {
+		Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+			Spark.stop();
+		}));
 	}
 
 	private static void errorOutResponse(int status, String message) {
