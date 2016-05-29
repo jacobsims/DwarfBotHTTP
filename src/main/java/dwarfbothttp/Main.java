@@ -14,9 +14,6 @@ import spark.Spark;
 import spark.template.velocity.VelocityTemplateEngine;
 
 public class Main {
-	//TODO: Switch to a GET param instead of cookies so you can use multiple tabs
-	private static final String SESSION_COOKIE_NAME = "sessionID";
-
 	private static SessionManager sessionManager;
 
 	public static void main(String[] args) {
