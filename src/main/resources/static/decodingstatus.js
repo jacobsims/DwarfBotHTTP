@@ -12,14 +12,20 @@ function createProgressBar(percent) {
     return outer;
 }
 
+function createParagraph(text) {
+    var p = document.createElement('p');
+    p.appendChild(document.createTextNode(text));
+    return p;
+}
+
 function updatePage(j) {
     var container = document.getElementById('decodingstatus-container');
     container.innerHTML = '';
-    container.appendChild(document.createTextNode('Load image'));
+    container.appendChild(createParagraph('Load image'));
     container.appendChild(createProgressBar(j['loadImageForConverting']));
-    container.appendChild(document.createTextNode('Detect tileset'));
+    container.appendChild(createParagraph('Detect tileset'));
     container.appendChild(createProgressBar(j['extractTileset']));
-    container.appendChild(document.createTextNode('Read tiles'));
+    container.appendChild(createParagraph('Read tiles'));
     container.appendChild(createProgressBar(j['readTiles']));
     
     var done = j['loadImageForConverting'] === 100 && j['extractTileset'] === 100 && j['readTiles'] === 100;
