@@ -55,7 +55,7 @@ public class Session {
 			stage.incrementAndGet();
 			tilesetDetected = fitter.extractTileset();
 			stage.incrementAndGet();
-			decodedImage = fitter.readTiles(tilesetDetected.getBasex(), tilesetDetected.getBasey(), tilesetDetected.getTileset());
+			decodedImage = fitter.readTiles(toConvert, tilesetDetected.getBasex(), tilesetDetected.getBasey(), tilesetDetected.getTileset());
 			stage.incrementAndGet();
 		});
 		conversionMainThread.start();
