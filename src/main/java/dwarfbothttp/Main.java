@@ -30,13 +30,11 @@ public class Main {
 		VelocityTemplateEngine velocityTemplateEngine = new VelocityTemplateEngine();
 
 		Spark.get("/", (request, response) -> {
-			String sessionId = sessionManager.addNewSession();
 			HashMap<String, Object> model = new HashMap<String, Object>();
-			model.put("session", sessionId);
 			return new ModelAndView(model, "index.vm");
 		}, velocityTemplateEngine);
-		Spark.post("/:session/upload", (request, response) -> {
-			String sessionId = getSessionIdForRequest(request, response);
+		Spark.post("/upload", (request, response) -> {
+			String sessionId = sessionManager.addNewSession();
 			Session s = sessionManager.get(sessionId);
 
 			try {
