@@ -11,13 +11,20 @@
     <p>Image decoded successfully!</p>
     <p>Choose a tileset to convert to:</p>
     <form action="/${session}/encodedimage.png" method="get">
-        <select name="tileset">
+        <select name="tileset" id="tileset" onchange="updateTilesetImg();">
             #foreach( $tileset in $tilesets )
                 <option value="${tileset.ImagePath}">${tileset.ImagePath}</option>
             #end
         </select>
         <input type="submit" value="Render">
+        <br/><br/>
+        <img id="tilesetImg" width="45%" height="50%"/>
     </form>
 </div>
+<script>
+function updateTilesetImg() {
+     document.getElementById('tilesetImg').setAttribute('src', '/Tilesets'+document.getElementById('tileset').options[document.getElementById('tileset').selectedIndex].text);
+}
+</script>
 </body>
 </html>
