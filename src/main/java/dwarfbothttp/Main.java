@@ -5,7 +5,6 @@ import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.logging.Level;
 import javax.imageio.ImageIO;
-
 import Code.Tileset;
 import spark.ModelAndView;
 import spark.Request;
@@ -112,6 +111,24 @@ public class Main {
 			Session s = sessionManager.get(sessionId);
 			response.type("application/json");
 			return s.statusJson();
+		});
+		Spark.get("/gettilesetimage.png", (request, response) -> {
+			String param = request.queryParams("tilesetpath");
+			Tileset tileset = null;
+			for (Tileset t : Session.getSupportedTilesets()) {
+				if (t.getImagePath().equals(param)) {
+					tileset = t;
+					break;
+				}
+			}
+			if (tileset == null) {
+				errorOutResponse(404, "Tileset not found");
+			}
+
+			response.type("image/png");
+			OutputStream outputStream = response.raw().getOutputStream();
+			ImageIO.write(tileset.loadImage(), "png", outputStream);
+			return response;
 		});
 	}
 
