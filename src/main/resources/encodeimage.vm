@@ -5,7 +5,7 @@
     <link rel="stylesheet" type="text/css" href="/style.css">
     <meta name="viewport" content="user-scalable=yes,width=device-width" />
 </head>
-<body>
+<body onload="updateTilesetImg();">
 #include("header.vm")
 <div class="content-container">
     <p>Image decoded successfully!</p>
@@ -18,7 +18,7 @@
         </select>
         <input type="submit" value="Render">
         <br/><br/>
-        <img id="tilesetImg" width="45%" height="50%"/>
+        <img id="tilesetImg" width="45%" height="45%"/>
     </form>
 </div>
 <script>
