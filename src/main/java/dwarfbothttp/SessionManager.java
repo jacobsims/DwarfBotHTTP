@@ -36,7 +36,7 @@ public class SessionManager {
 		return sessionMap.get(k);
 	}
 
-	private static String createSessionId() {
+	private String createSessionId() {
 		MessageDigest messageDigest = null;
 		try {
 			messageDigest = MessageDigest.getInstance("SHA-1");
@@ -46,7 +46,12 @@ public class SessionManager {
 		}
 		String beforeHash = Long.toString(System.nanoTime()) + ':' + random.nextInt();
 		messageDigest.update(beforeHash.getBytes(Charset.defaultCharset()));
-		return DatatypeConverter.printHexBinary(messageDigest.digest()).substring(0, 16).toLowerCase();
+		String sessionId = DatatypeConverter.printHexBinary(messageDigest.digest()).substring(0, 16).toLowerCase();
+		if (sessionMap.containsKey(sessionId)) {
+			return createSessionId();
+		} else {
+			return sessionId;
+		}
 	}
 
 	static {
