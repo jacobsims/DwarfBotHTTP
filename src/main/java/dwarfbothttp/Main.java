@@ -107,6 +107,11 @@ public class Main {
 			response.type("application/json");
 			return s.statusJson();
 		});
+		Spark.get("/:session/archive", (request, response) -> {
+			String sessionId = getSessionIdForRequest(request, response);
+			Session s = sessionManager.get(sessionId);
+			return ((Boolean) s.archive()).toString();
+		});
 		Spark.get("/gettilesetimage.png", (request, response) -> {
 			String param = request.queryParams("tilesetpath");
 			Tileset tileset = Session.tilesetWithPath(param);
