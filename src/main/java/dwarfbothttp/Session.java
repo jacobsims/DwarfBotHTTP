@@ -69,6 +69,9 @@ public class Session {
 			// However, this Session will still work; it just won't be archived.
 			e.printStackTrace();
 			return false;
+		} catch (IllegalStateException e) {
+			// It could not be archived because the session is still decoding.
+			return false;
 		}
 	}
 

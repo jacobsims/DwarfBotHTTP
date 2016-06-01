@@ -106,8 +106,11 @@ public class ArchivedSession {
 		}
 	}
 
-	public static ArchivedSession convertFromLive(LiveSession liveSession) throws UnarchiveFailedException {
-		//TODO: throw IllegalStateException if trying to archive a session that hasn't been decoded.
+	public static ArchivedSession convertFromLive(LiveSession liveSession) throws UnarchiveFailedException, IllegalStateException {
+		if (!liveSession.isDecodingFinished()) {
+			throw new IllegalStateException("Cannot archive a session that hasn't been decoded yet");
+		}
+
 		File archiveContainer = new File(Main.getConfigDir(), ARCHIVE_DIR_NAME);
 		archiveContainer.mkdirs();
 		File archiveDir = null;
