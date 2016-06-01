@@ -39,9 +39,9 @@ public class ArchivedSession {
 
 	public LiveSession convertToLive() throws UnarchiveFailedException {
 		File jsonFile = new File(directory, INFO_FILENAME);
-		try {
+		try (FileReader jsonFileReader = new FileReader(jsonFile)) {
 			Type mapType = new TypeToken<Map<String, Object>>() {}.getType();
-			Map<String, Object> map = gson.fromJson(new FileReader(jsonFile), mapType);
+			Map<String, Object> map = gson.fromJson(jsonFileReader, mapType);
 			int seedx = ((Double)map.get("seedx")).intValue(); // gson reads all numbers as doubles
 			int seedy = ((Double)map.get("seedy")).intValue();
 			Map<String, Object> tilesetDetectedMap = (Map<String, Object>)map.get("tilesetDetected");
@@ -83,6 +83,9 @@ public class ArchivedSession {
 			return archivedSessions;
 		}
 		File[] subdirectories = sessionsDir.listFiles();
+		if (subdirectories == null) {
+			return archivedSessions;
+		}
 		for (File subdirectory : subdirectories) {
 			try {
 				archivedSessions.add(new ArchivedSession(subdirectory));

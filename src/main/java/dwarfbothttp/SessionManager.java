@@ -1,6 +1,7 @@
 package dwarfbothttp;
 
 import javax.xml.bind.DatatypeConverter;
+import java.nio.charset.Charset;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
@@ -10,6 +11,7 @@ import java.util.Random;
  * @author Jacob Sims
  */
 public class SessionManager {
+	private static Random random;
 	private HashMap<String, Session> sessionMap;
 
 	public SessionManager() {
@@ -42,8 +44,12 @@ public class SessionManager {
 			//This should never happen! http://docs.oracle.com/javase/7/docs/api/java/security/MessageDigest.html
 			throw new Error("Java is messed up", e);
 		}
-		String beforeHash = new Long(System.nanoTime()).toString() + ':' + new Random().nextInt();
-		messageDigest.update(beforeHash.getBytes());
+		String beforeHash = Long.toString(System.nanoTime()) + ':' + random.nextInt();
+		messageDigest.update(beforeHash.getBytes(Charset.defaultCharset()));
 		return DatatypeConverter.printHexBinary(messageDigest.digest()).substring(0, 16).toLowerCase();
+	}
+
+	static {
+		random = new Random();
 	}
 }
