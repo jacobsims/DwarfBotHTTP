@@ -1,21 +1,9 @@
 package dwarfbothttp;
 
-import Code.DecodedImage;
 import Code.Tileset;
-import Code.TilesetDetected;
-import Code.TilesetFitter;
 import Code.TilesetManager;
 import java.awt.image.BufferedImage;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.concurrent.atomic.AtomicInteger;
-import javax.imageio.ImageIO;
-import javax.servlet.MultipartConfigElement;
-import javax.servlet.ServletException;
-
-import com.google.gson.Gson;
 import spark.Request;
 
 /**
@@ -23,75 +11,116 @@ import spark.Request;
  */
 public class Session {
 	private static ArrayList<Tileset> supportedTilesets; // Use one set of these for all sessions.
-	private static Gson gson; // Says it is thread safe.
 
-	private BufferedImage toConvert;
-	private Thread conversionMainThread;
-	private TilesetFitter fitter;
-	private AtomicInteger stage;
-	private TilesetDetected tilesetDetected;
-	private DecodedImage decodedImage;
+	private boolean live;
+	private LiveSession liveSession;
+	private ArchivedSession archivedSession;
+
+	public Session(String _id) {
+		live = true;
+		liveSession = new LiveSession();
+		liveSession.setId(_id);
+	}
+
+	public Session(LiveSession _liveSession) {
+		live = true;
+		liveSession = _liveSession;
+	}
+
+	public Session(ArchivedSession _archivedSession) {
+		live = false;
+		archivedSession = _archivedSession;
+	}
 
 	public void setImageFromUpload(Request request) throws UploadFailedException {
-		request.attribute("org.eclipse.jetty.multipartConfig", new MultipartConfigElement((String)null));
-		try (InputStream inputStream = request.raw().getPart("to_convert").getInputStream()) {
-			toConvert = ImageIO.read(inputStream);
-			toConvert.getData();
-		} catch (IOException|ServletException|NullPointerException e) {
-			throw new UploadFailedException("Could not set image for the session from your upload.", e);
+		if (!live) {
+			unarchive();
+		}
+		liveSession.setImageFromUpload(request);
+	}
+
+	public void unarchive() {
+		if (!live) {
+			try {
+				liveSession = archivedSession.convertToLive();
+			} catch (UnarchiveFailedException e) {
+				throw new Error("Could not unarchive a session. This should have been tested at the beginning " +
+						"of the program, but if you touched the files while the program was running, that would " +
+						"cause this error.", e);
+			}
+			archivedSession = null;
+			live = true;
+		}
+	}
+
+	public boolean archive() {
+		// Returns true if the archive was successful.
+		if (!live) {
+			return true;
+		}
+		try {
+			archivedSession = ArchivedSession.convertFromLive(liveSession);
+			live = false;
+			liveSession = null;
+			return true;
+		} catch (UnarchiveFailedException e) {
+			// There was an internal error or a file was tampered with during execution.
+			// However, this Session will still work; it just won't be archived.
+			return false;
 		}
 	}
 
 	public void startDecoding() {
-		if (stage != null) {
-			// We have already started decoding. No need to start it over.
-			return;
+		if (live) {
+			liveSession.startDecoding();
 		}
-		stage = new AtomicInteger(0);
-		fitter = new TilesetFitter(supportedTilesets, false);
-		conversionMainThread = new Thread(() -> {
-			//TODO: Allow `artistic` mode (checkbox in the first form)
-			fitter.loadImageForConverting(toConvert);
-			stage.incrementAndGet();
-			tilesetDetected = fitter.extractTileset();
-			stage.incrementAndGet();
-			decodedImage = fitter.readTiles(toConvert, tilesetDetected.getBasex(), tilesetDetected.getBasey(), tilesetDetected.getTileset());
-			stage.incrementAndGet();
-		});
-		conversionMainThread.start();
+		// Archived sessions only exist if they have already finished decoding.
 	}
 
 	public String statusJson() {
-		HashMap<String, Integer> statusMap = new HashMap<>();
-		statusMap.put("loadImageForConverting", ((stage != null && stage.get() > 0) ? 100 : 0));
-		statusMap.put("extractTileset", 100 * fitter.getNumTilesetChecksComplete() / supportedTilesets.size());
-		statusMap.put("readTiles", ((stage != null && stage.get() > 2) ? 100 : 0));
-		return gson.toJson(statusMap);
+		if (live) {
+			return liveSession.statusJson();
+		} else {
+			return archivedSession.statusJson();
+		}
 	}
 
 	public BufferedImage getToConvert() {
-		return toConvert;
+		if (!live) {
+			unarchive();
+		}
+		return liveSession.getToConvert();
 	}
 
 	public boolean isDecodingFinished() {
-		return stage.get() == 3;
+		if (!live) {
+			return true;
+		}
+		return liveSession.isDecodingFinished();
 	}
 
 	public BufferedImage renderToTileset(Tileset tileset) {
-		if (!isDecodingFinished()) {
-			throw new IllegalStateException("Cannot render an image if it is not decoded yet!");
+		if (!live) {
+			unarchive();
 		}
-		int tilesetId = -1;
-		for (int i = 0; i < supportedTilesets.size(); i++) {
-			if (tileset == supportedTilesets.get(i)) {
-				tilesetId = i;
-				break;
+		return liveSession.renderToTileset(tileset);
+	}
+
+	public static Tileset tilesetWithPath(String path) {
+		for (Tileset supportedTileset : supportedTilesets) {
+			if (supportedTileset.getImagePath().equals(path)) {
+				return supportedTileset;
 			}
 		}
-		if (tilesetId == -1) {
-			throw new IllegalArgumentException("Tileset not on the list of supported tilesets");
+		return null;
+	}
+
+	public String getId() {
+		if (live) {
+			return liveSession.getId();
+		} else {
+			return archivedSession.getId();
 		}
-		return fitter.renderImage(decodedImage, tilesetId);
 	}
 
 	public static ArrayList<Tileset> getSupportedTilesets() {
@@ -101,6 +130,5 @@ public class Session {
 	static {
 		TilesetManager tilesetManager = new TilesetManager();
 		supportedTilesets = tilesetManager.getTilesets();
-		gson = new Gson();
 	}
 }

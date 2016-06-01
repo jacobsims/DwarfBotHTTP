@@ -26,7 +26,7 @@ public class SessionManager {
 
 	public String addNewSession() {
 		String id = createSessionId();
-		sessionMap.put(id, new Session());
+		sessionMap.put(id, new Session(id));
 		return id;
 	}
 

@@ -1,6 +1,7 @@
 package dwarfbothttp;
 
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.logging.Level;
@@ -79,13 +80,7 @@ public class Main {
 		Spark.get("/:session/encodedimage.png", (request, response) -> {
 			String sessionId = getSessionIdForRequest(request, response);
 			Session s = sessionManager.get(sessionId);
-			Tileset tileset = null;
-			for (Tileset t : Session.getSupportedTilesets()) {
-				if (t.getImagePath().equals(request.queryParams("tileset"))) {
-					tileset = t;
-					break;
-				}
-			}
+			Tileset tileset = Session.tilesetWithPath(request.queryParams("tileset"));
 
 			BufferedImage renderedImage = null;
 			try {
@@ -114,13 +109,7 @@ public class Main {
 		});
 		Spark.get("/gettilesetimage.png", (request, response) -> {
 			String param = request.queryParams("tilesetpath");
-			Tileset tileset = null;
-			for (Tileset t : Session.getSupportedTilesets()) {
-				if (t.getImagePath().equals(param)) {
-					tileset = t;
-					break;
-				}
-			}
+			Tileset tileset = Session.tilesetWithPath(param);
 			if (tileset == null) {
 				errorOutResponse(404, "Tileset not found");
 			}
@@ -152,5 +141,16 @@ public class Main {
 			response.redirect("/");
 		}
 		return id;
+	}
+
+	public static File getConfigDir() {
+		String path = System.getProperty("user.home") + File.separator + ".config" + File.separator + "dwarfbothttp";
+		File file = new File(path);
+		if (!file.isDirectory()) {
+			if (!file.mkdirs()) {
+				throw new Error("Could not create config directory");
+			}
+		}
+		return file;
 	}
 }
