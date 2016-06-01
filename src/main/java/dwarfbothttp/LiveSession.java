@@ -40,7 +40,7 @@ public class LiveSession {
 		seedy = null; // We can't have these initialized to 0.
 	}
 
-	public LiveSession(BufferedImage _toConvert, TilesetDetected _tilesetDetected, DecodedImage _decodedImage, int _seedx, int _seedy) {
+	public LiveSession(BufferedImage _toConvert, TilesetDetected _tilesetDetected, DecodedImage _decodedImage, int _seedx, int _seedy, boolean _decodingFinished) {
 		this();
 		decodingHasStarted = true;
 		toConvert = _toConvert;
@@ -48,6 +48,9 @@ public class LiveSession {
 		decodedImage = _decodedImage;
 		seedx = _seedx;
 		seedy = _seedy;
+		decodingFinished = new AtomicBoolean(_decodingFinished);
+		fitter = new TilesetFitter(Session.getSupportedTilesets(), false);
+		fitter.setToConvert(toConvert);
 	}
 
 	public void setImageFromUpload(Request request) throws UploadFailedException {

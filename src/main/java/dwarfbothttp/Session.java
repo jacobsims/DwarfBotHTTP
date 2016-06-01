@@ -44,6 +44,7 @@ public class Session {
 			try {
 				liveSession = archivedSession.convertToLive();
 			} catch (UnarchiveFailedException e) {
+				e.printStackTrace();
 				throw new Error("Could not unarchive a session. This should have been tested at the beginning " +
 						"of the program, but if you touched the files while the program was running, that would " +
 						"cause this error.", e);
@@ -66,6 +67,7 @@ public class Session {
 		} catch (UnarchiveFailedException e) {
 			// There was an internal error or a file was tampered with during execution.
 			// However, this Session will still work; it just won't be archived.
+			e.printStackTrace();
 			return false;
 		}
 	}

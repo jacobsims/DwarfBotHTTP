@@ -42,14 +42,14 @@ public class ArchivedSession {
 		try {
 			Type mapType = new TypeToken<Map<String, Object>>() {}.getType();
 			Map<String, Object> map = gson.fromJson(new FileReader(jsonFile), mapType);
-			int seedx = (Integer)map.get("seedx");
-			int seedy = (Integer)map.get("seedy");
+			int seedx = ((Double)map.get("seedx")).intValue(); // gson reads all numbers as doubles
+			int seedy = ((Double)map.get("seedy")).intValue();
 			Map<String, Object> tilesetDetectedMap = (Map<String, Object>)map.get("tilesetDetected");
 			TilesetDetected tilesetDetected = new TilesetDetected(
-					(Integer)tilesetDetectedMap.get("basex"),
-					(Integer)tilesetDetectedMap.get("basey"),
+					((Double)tilesetDetectedMap.get("basex")).intValue(),
+					((Double)tilesetDetectedMap.get("basey")).intValue(),
 					Session.tilesetWithPath((String)tilesetDetectedMap.get("tilesetpath")),
-					(Integer)tilesetDetectedMap.get("matchCount"));
+					((Double)tilesetDetectedMap.get("matchCount")).intValue());
 			BufferedImage toConvert;
 			toConvert = ImageIO.read(new File(directory, TOCONVERT_FILENAME));
 			DecodedImage decodedImage;
@@ -59,7 +59,7 @@ public class ArchivedSession {
 			) {
 				decodedImage = (DecodedImage)objectInputStream.readObject();
 			}
-			LiveSession liveSession = new LiveSession(toConvert, tilesetDetected, decodedImage, seedx, seedy);
+			LiveSession liveSession = new LiveSession(toConvert, tilesetDetected, decodedImage, seedx, seedy, true);
 			liveSession.setId((String)map.get("id"));
 
 			return liveSession;
@@ -107,6 +107,7 @@ public class ArchivedSession {
 	}
 
 	public static ArchivedSession convertFromLive(LiveSession liveSession) throws UnarchiveFailedException {
+		//TODO: throw IllegalStateException if trying to archive a session that hasn't been decoded.
 		File archiveContainer = new File(Main.getConfigDir(), ARCHIVE_DIR_NAME);
 		archiveContainer.mkdirs();
 		File archiveDir = null;
