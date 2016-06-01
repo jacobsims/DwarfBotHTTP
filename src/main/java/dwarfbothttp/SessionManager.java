@@ -32,6 +32,10 @@ public class SessionManager {
 		return id;
 	}
 
+	public void addExistingSession(String id, Session session) {
+		sessionMap.put(id, session);
+	}
+
 	public Session get(String k) {
 		return sessionMap.get(k);
 	}

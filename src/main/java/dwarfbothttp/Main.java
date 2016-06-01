@@ -22,6 +22,7 @@ public class Main {
 		addInterruptHandler();
 
 		sessionManager = new SessionManager();
+		loadPreviouslyArchivedSessions();
 
 		Code.Main.setupLogger();
 		Code.Main.logger.getHandlers()[0].setLevel(Level.WARNING);
@@ -124,6 +125,12 @@ public class Main {
 			ImageIO.write(tileset.loadImage(), "png", outputStream);
 			return response;
 		});
+	}
+
+	private static void loadPreviouslyArchivedSessions() {
+		for (ArchivedSession archivedSession : ArchivedSession.retrieveAllFromConfigDir()) {
+			sessionManager.addExistingSession(archivedSession.getId(), new Session(archivedSession));
+		}
 	}
 
 	private static void addInterruptHandler() {

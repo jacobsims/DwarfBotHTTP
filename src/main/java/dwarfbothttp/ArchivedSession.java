@@ -22,6 +22,7 @@ public class ArchivedSession {
 	public static final String INFO_FILENAME = "info.json";
 	public static final String DECODED_IMAGE_FILENAME = "decodedImage.ser";
 	public static final String ARCHIVE_DIR_NAME = "sessions";
+	private static final String INDIVIDUAL_DIR_PREFIX = "session_";
 
 
 	private static Gson gson; // Says it is thread safe.
@@ -87,6 +88,10 @@ public class ArchivedSession {
 			return archivedSessions;
 		}
 		for (File subdirectory : subdirectories) {
+			if (!subdirectory.isDirectory() || !subdirectory.getName().startsWith(INDIVIDUAL_DIR_PREFIX)) {
+				// Don't print the whole error for stuff like .DS_Store; skip it silently.
+				continue;
+			}
 			try {
 				archivedSessions.add(new ArchivedSession(subdirectory));
 			} catch (UnarchiveFailedException e) {
@@ -120,7 +125,7 @@ public class ArchivedSession {
 		try {
 			// This sounds like the directory will be deleted afterward, but it does not do that.
 			// We use this to create a random filename without working hard to generate it.
-			archiveDir = Files.createTempDirectory(archiveContainer.toPath(), "session_").toFile();
+			archiveDir = Files.createTempDirectory(archiveContainer.toPath(), INDIVIDUAL_DIR_PREFIX).toFile();
 		} catch (IOException e) {
 			throw new Error("Could not create a directory for the ArchivedSession", e);
 		}
