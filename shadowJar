@@ -1,20 +1,20 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Temporary script to use shadowJar while the project is still structured anti-Gradle's expectations.
 set -e
 
+# Delete the shadowJar line in the submodule so Gradle doesn't give an error
 cd "$(dirname "$0")/DwarfBot"
 sed -i.bak '/com.github.johnrengelman.shadow/d' build.gradle
-rm build.gradle.bak
 cd ..
 
+# Then add it to the regular project
 sed -i.bak '/plugins {/a\'$'\n''    id "com.github.johnrengelman.shadow" version "1.2.3"\'$'\n' build.gradle
-rm build.gradle.bak
 
-./gradlew shadowJar
+./gradlew shadowJar ||
+    true # Don't exit the script if the build fails; we still need to revert these files
 
 # return to normal
-sed -i.bak '/com.github.johnrengelman.shadow/d' build.gradle
-rm build.gradle.bak
+mv build.gradle.bak build.gradle
 cd DwarfBot
-git checkout -- build.gradle
+mv build.gradle.bak build.gradle
