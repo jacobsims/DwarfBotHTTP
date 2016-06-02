@@ -23,7 +23,7 @@
 </div>
 <script>
 function updateTilesetImg() {
-     document.getElementById('tilesetImg').setAttribute('src', '/Tilesets'+document.getElementById('tileset').options[document.getElementById('tileset').selectedIndex].text);
+     document.getElementById('tilesetImg').setAttribute('src', '/gettilesetimage.png?tilesetpath=' + encodeURIComponent(document.getElementById('tileset').value));
 }
 </script>
 </body>
