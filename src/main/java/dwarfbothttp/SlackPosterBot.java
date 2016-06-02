@@ -112,6 +112,7 @@ public class SlackPosterBot {
 		getParams.put("as_user", "true");
 		HttpGet httpGet = new HttpGet(slackApiUri("chat.postMessage", getParams));
 		HttpResponse response = httpClient.execute(httpGet);
+		return response;
 	}
 
 	private URI slackApiUri(String endpoint, Map<String, String> params) {
