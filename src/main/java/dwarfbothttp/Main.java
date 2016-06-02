@@ -126,11 +126,6 @@ public class Main {
 			response.type("application/json");
 			return s.statusJson();
 		});
-		Spark.get("/:session/archive", (request, response) -> {
-			String sessionId = getSessionIdForRequest(request, response);
-			Session s = sessionManager.get(sessionId);
-			return ((Boolean) s.archive()).toString();
-		});
 		Spark.post("/:session/submitfailurereport", (request, response) -> {
 			String sessionId = getSessionIdForRequest(request, response);
 			Session s = sessionManager.get(sessionId);
@@ -164,6 +159,7 @@ public class Main {
 	private static void addInterruptHandler() {
 		Runtime.getRuntime().addShutdownHook(new Thread(() -> {
 			Spark.stop();
+			sessionManager.archiveAll();
 		}));
 	}
 
