@@ -174,3 +174,8 @@ gradle-app.setting
 .idea/copyright/profiles_settings.xml
 .idea/findbugs-idea.xml
 .idea/misc.xml
+
+#####
+
+# Resources/SampleToConvert.png gets created constantly
+Resources/
