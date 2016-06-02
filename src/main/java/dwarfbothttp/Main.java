@@ -2,6 +2,7 @@ package dwarfbothttp;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.logging.Level;
@@ -126,11 +127,15 @@ public class Main {
 			Session s = sessionManager.get(sessionId);
 			return ((Boolean) s.archive()).toString();
 		});
-		Spark.get("/:session/slack", (request, response) -> {
+		Spark.post("/:session/submitfailurereport", (request, response) -> {
 			String sessionId = getSessionIdForRequest(request, response);
 			Session s = sessionManager.get(sessionId);
-			slackPosterBot.submitFailureReport(s.createFailureReport());
-			return "Finished";
+			try {
+				slackPosterBot.submitFailureReport(s.createFailureReport());
+			} catch (IOException e) {
+				return "Failed to report failure :(";
+			}
+			return "Submitted.";
 		});
 		Spark.get("/gettilesetimage.png", (request, response) -> {
 			String param = request.queryParams("tilesetpath");
