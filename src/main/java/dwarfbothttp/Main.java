@@ -1,11 +1,11 @@
 package dwarfbothttp;
 
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.logging.Level;
 import javax.imageio.ImageIO;
-
 import Code.Tileset;
 import spark.ModelAndView;
 import spark.Request;
@@ -22,6 +22,7 @@ public class Main {
 		addInterruptHandler();
 
 		sessionManager = new SessionManager();
+		loadPreviouslyArchivedSessions();
 
 		Code.Main.setupLogger();
 		Code.Main.logger.getHandlers()[0].setLevel(Level.WARNING);
@@ -80,13 +81,7 @@ public class Main {
 		Spark.get("/:session/encodedimage.png", (request, response) -> {
 			String sessionId = getSessionIdForRequest(request, response);
 			Session s = sessionManager.get(sessionId);
-			Tileset tileset = null;
-			for (Tileset t : Session.getSupportedTilesets()) {
-				if (t.getImagePath().equals(request.queryParams("tileset"))) {
-					tileset = t;
-					break;
-				}
-			}
+			Tileset tileset = Session.tilesetWithPath(request.queryParams("tileset"));
 
 			BufferedImage renderedImage = null;
 			try {
@@ -113,6 +108,29 @@ public class Main {
 			response.type("application/json");
 			return s.statusJson();
 		});
+		Spark.get("/:session/archive", (request, response) -> {
+			String sessionId = getSessionIdForRequest(request, response);
+			Session s = sessionManager.get(sessionId);
+			return ((Boolean) s.archive()).toString();
+		});
+		Spark.get("/gettilesetimage.png", (request, response) -> {
+			String param = request.queryParams("tilesetpath");
+			Tileset tileset = Session.tilesetWithPath(param);
+			if (tileset == null) {
+				errorOutResponse(404, "Tileset not found");
+			}
+
+			response.type("image/png");
+			OutputStream outputStream = response.raw().getOutputStream();
+			ImageIO.write(tileset.loadImage(), "png", outputStream);
+			return response;
+		});
+	}
+
+	private static void loadPreviouslyArchivedSessions() {
+		for (ArchivedSession archivedSession : ArchivedSession.retrieveAllFromConfigDir()) {
+			sessionManager.addExistingSession(archivedSession.getId(), new Session(archivedSession));
+		}
 	}
 
 	private static void addInterruptHandler() {
@@ -135,5 +153,16 @@ public class Main {
 			response.redirect("/");
 		}
 		return id;
+	}
+
+	public static File getConfigDir() {
+		String path = System.getProperty("user.home") + File.separator + ".config" + File.separator + "dwarfbothttp";
+		File file = new File(path);
+		if (!file.isDirectory()) {
+			if (!file.mkdirs()) {
+				throw new Error("Could not create config directory");
+			}
+		}
+		return file;
 	}
 }

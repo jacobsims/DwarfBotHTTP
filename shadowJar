@@ -1,0 +1,20 @@
+#!/bin/bash
+
+# Temporary script to use shadowJar while the project is still structured anti-Gradle's expectations.
+set -e
+
+cd "$(dirname "$0")/DwarfBot"
+sed -i.bak '/com.github.johnrengelman.shadow/d' build.gradle
+rm build.gradle.bak
+cd ..
+
+sed -i.bak '/plugins {/a\'$'\n''    id "com.github.johnrengelman.shadow" version "1.2.3"\'$'\n' build.gradle
+rm build.gradle.bak
+
+./gradlew shadowJar
+
+# return to normal
+sed -i.bak '/com.github.johnrengelman.shadow/d' build.gradle
+rm build.gradle.bak
+cd DwarfBot
+git checkout -- build.gradle
