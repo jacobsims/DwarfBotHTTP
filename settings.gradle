@@ -1,3 +1,0 @@
-include ':DwarfBot'
-include ':JavaMediawikiBot'
-project(':JavaMediawikiBot').projectDir = new File(settingsDir, './DwarfBot/JavaMediawikiBot')

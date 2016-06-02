@@ -4,25 +4,28 @@ plugins {
     id 'idea'
     id 'application'
     id 'findbugs'
+    id "com.github.johnrengelman.shadow" version "1.2.3"
 }
 
 
 sourceCompatibility = 1.8
 mainClassName = "dwarfbothttp.Main"
 
-repositories {
-    jcenter()
+allprojects {
+    repositories {
+        jcenter()
+		maven { url "https://jitpack.io" }
+    }
 }
 
 dependencies {
-    compile project(':DwarfBot')
+    compile 'com.github.jacobsims:DwarfBot:8b25308e1c54d8776c62d27ae4d2e8f91716e7e8'
     compile 'com.sparkjava:spark-core:2.5'
     compile 'com.sparkjava:spark-template-velocity:2.3'
     compile 'org.slf4j:slf4j-simple:1.7.21'
     compile 'com.google.code.gson:gson:2.6.2'
     compile 'org.apache.httpcomponents:httpclient:4.5.2'
     compile 'org.apache.httpcomponents:httpmime:4.5.2'
-    testCompile 'junit:junit:4.+'
 }
 
 findbugs {
@@ -33,11 +36,5 @@ tasks.withType(FindBugs) {
     reports {
         xml.enabled = false
         html.enabled = true
-    }
-}
-
-jar {
-    manifest {
-        attributes 'Main-Class': 'dwarfbothttp.Main'
     }
 }
