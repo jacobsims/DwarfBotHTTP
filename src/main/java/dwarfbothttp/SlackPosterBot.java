@@ -5,10 +5,16 @@ import com.google.gson.reflect.TypeToken;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.utils.URIBuilder;
+import org.apache.http.entity.mime.MultipartEntityBuilder;
+import org.apache.http.entity.mime.content.ByteArrayBody;
+import org.apache.http.entity.mime.content.InputStreamBody;
 import org.apache.http.impl.client.HttpClients;
 
+import javax.imageio.ImageIO;
 import javax.naming.ConfigurationException;
+import java.awt.image.BufferedImage;
 import java.io.*;
 import java.lang.reflect.Type;
 import java.net.URI;
@@ -40,6 +46,7 @@ public class SlackPosterBot {
 				throw new ConfigurationException("Channel name not configured.");
 			}
 			slackChannelId = slackChannelIdFromChannelName(channelName);
+			BufferedImage image = Session.getSupportedTilesets().get(0).loadImage();
 		} catch (IOException|ClassCastException e) {
 			throw new ConfigurationException("Could not initialize SlackPosterBot with a token");
 		}
@@ -71,6 +78,31 @@ public class SlackPosterBot {
 		} catch (ClassCastException e) {
 			throw new IOException("Could not read response from Slack", e);
 		}
+	}
+
+	public void submitFailureReport(FailureReport failureReport) throws IOException {
+		uploadPng(failureReport.getSessionId() + ".png", failureReport.getToConvert());
+		postMessage("```\n" + failureReport + "\n```");
+	}
+
+	private void uploadPng(String filename, BufferedImage image) throws IOException {
+		ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+		ImageIO.write(image, "png", byteArrayOutputStream);
+		byteArrayOutputStream.flush();
+		byte[] bytes = byteArrayOutputStream.toByteArray();
+		byteArrayOutputStream.close();
+		uploadFile(filename, bytes);
+	}
+
+	private HttpResponse uploadFile(String filename, byte[] bytes) throws IOException {
+		Map<String, String> params = new HashMap<>();
+		params.put("channels", slackChannelId);
+		params.put("filename", filename);
+		HttpPost httpPost = new HttpPost(slackApiUri("files.upload", params));
+		ByteArrayBody body = new ByteArrayBody(bytes, filename);
+		httpPost.setEntity(MultipartEntityBuilder.create().addPart("file", body).build());
+		HttpResponse response = httpClient.execute(httpPost);
+		return response;
 	}
 
 	private void postMessage(String message) throws IOException {

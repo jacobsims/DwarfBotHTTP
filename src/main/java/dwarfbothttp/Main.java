@@ -126,6 +126,12 @@ public class Main {
 			Session s = sessionManager.get(sessionId);
 			return ((Boolean) s.archive()).toString();
 		});
+		Spark.get("/:session/slack", (request, response) -> {
+			String sessionId = getSessionIdForRequest(request, response);
+			Session s = sessionManager.get(sessionId);
+			slackPosterBot.submitFailureReport(s.createFailureReport());
+			return "Finished";
+		});
 		Spark.get("/gettilesetimage.png", (request, response) -> {
 			String param = request.queryParams("tilesetpath");
 			Tileset tileset = Session.tilesetWithPath(param);
