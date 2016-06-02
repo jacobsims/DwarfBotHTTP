@@ -2,10 +2,13 @@ package dwarfbothttp;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.logging.Level;
 import javax.imageio.ImageIO;
+import javax.naming.ConfigurationException;
+
 import Code.Tileset;
 import spark.ModelAndView;
 import spark.Request;
@@ -15,6 +18,9 @@ import spark.template.velocity.VelocityTemplateEngine;
 
 public class Main {
 	private static SessionManager sessionManager;
+	private static SlackPosterBot slackPosterBot;
+	private static boolean failureReportsEnabled;
+	public static final String CONFIGFILE_FILENAME = "config.json";
 
 	public static void main(String[] args) {
 		System.setProperty("java.awt.headless", "true");
@@ -23,6 +29,17 @@ public class Main {
 
 		sessionManager = new SessionManager();
 		loadPreviouslyArchivedSessions();
+
+		slackPosterBot = null;
+		try {
+			slackPosterBot = new SlackPosterBot();
+			failureReportsEnabled = true;
+		} catch (ConfigurationException e) {
+			e.printStackTrace();
+			System.out.println("Warning: Could not initialize SlackPosterBot. This is normal if you haven't configured it.");
+			System.out.println("Continuing without Slack functionality.");
+			failureReportsEnabled = false;
+		}
 
 		Code.Main.setupLogger();
 		Code.Main.logger.getHandlers()[0].setLevel(Level.WARNING);
@@ -76,6 +93,7 @@ public class Main {
 			HashMap<String, Object> model = new HashMap<String, Object>();
 			model.put("session", sessionId);
 			model.put("tilesets", Session.getSupportedTilesets());
+			model.put("failureReportsEnabled", failureReportsEnabled);
 			return velocityTemplateEngine.render(new ModelAndView(model, "encodeimage.vm"));
 		});
 		Spark.get("/:session/encodedimage.png", (request, response) -> {
@@ -112,6 +130,16 @@ public class Main {
 			String sessionId = getSessionIdForRequest(request, response);
 			Session s = sessionManager.get(sessionId);
 			return ((Boolean) s.archive()).toString();
+		});
+		Spark.post("/:session/submitfailurereport", (request, response) -> {
+			String sessionId = getSessionIdForRequest(request, response);
+			Session s = sessionManager.get(sessionId);
+			try {
+				slackPosterBot.submitFailureReport(s.createFailureReport());
+			} catch (IOException e) {
+				return "Failed to report failure :(";
+			}
+			return "Submitted.";
 		});
 		Spark.get("/gettilesetimage.png", (request, response) -> {
 			String param = request.queryParams("tilesetpath");
