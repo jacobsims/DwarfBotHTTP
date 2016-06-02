@@ -105,20 +105,13 @@ public class SlackPosterBot {
 		return response;
 	}
 
-	private void postMessage(String message) throws IOException {
+	private HttpResponse postMessage(String message) throws IOException {
 		Map<String, String> getParams = new HashMap<>();
 		getParams.put("text", message);
 		getParams.put("channel", slackChannelId);
 		getParams.put("as_user", "true");
 		HttpGet httpGet = new HttpGet(slackApiUri("chat.postMessage", getParams));
 		HttpResponse response = httpClient.execute(httpGet);
-		try (
-				InputStream contentStream = response.getEntity().getContent();
-				Reader streamReader = new InputStreamReader(contentStream);
-				BufferedReader bufferedReader = new BufferedReader(streamReader);
-		) {
-			System.out.println(bufferedReader.readLine());
-		}
 	}
 
 	private URI slackApiUri(String endpoint, Map<String, String> params) {

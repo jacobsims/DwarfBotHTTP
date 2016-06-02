@@ -19,6 +19,7 @@ import spark.template.velocity.VelocityTemplateEngine;
 public class Main {
 	private static SessionManager sessionManager;
 	private static SlackPosterBot slackPosterBot;
+	private static boolean failureReportsEnabled;
 	public static final String CONFIGFILE_FILENAME = "config.json";
 
 	public static void main(String[] args) {
@@ -32,10 +33,12 @@ public class Main {
 		slackPosterBot = null;
 		try {
 			slackPosterBot = new SlackPosterBot();
+			failureReportsEnabled = true;
 		} catch (ConfigurationException e) {
 			e.printStackTrace();
 			System.out.println("Warning: Could not initialize SlackPosterBot. This is normal if you haven't configured it.");
 			System.out.println("Continuing without Slack functionality.");
+			failureReportsEnabled = false;
 		}
 
 		Code.Main.setupLogger();
@@ -90,6 +93,7 @@ public class Main {
 			HashMap<String, Object> model = new HashMap<String, Object>();
 			model.put("session", sessionId);
 			model.put("tilesets", Session.getSupportedTilesets());
+			model.put("failureReportsEnabled", failureReportsEnabled);
 			return velocityTemplateEngine.render(new ModelAndView(model, "encodeimage.vm"));
 		});
 		Spark.get("/:session/encodedimage.png", (request, response) -> {

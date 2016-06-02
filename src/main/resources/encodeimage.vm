@@ -20,12 +20,14 @@
         </select>
         <input type="submit" value="Render">
     </form>
-    <p>
-        <span id="failure-report-status">
-            Looks wrong?
-            <a href="javascript:submitFailureReport()">Submit a failure report</a>
-        </span>
-    </p>
+    #if ( ${failureReportsEnabled} )
+        <p>
+            <span id="failure-report-status">
+                Looks wrong?
+                <a href="javascript:submitFailureReport()">Submit a failure report</a>
+            </span>
+        </p>
+    #end
 </div>
 </body>
 </html>
