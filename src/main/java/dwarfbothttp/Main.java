@@ -6,6 +6,8 @@ import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.logging.Level;
 import javax.imageio.ImageIO;
+import javax.naming.ConfigurationException;
+
 import Code.Tileset;
 import spark.ModelAndView;
 import spark.Request;
@@ -15,6 +17,8 @@ import spark.template.velocity.VelocityTemplateEngine;
 
 public class Main {
 	private static SessionManager sessionManager;
+	private static SlackPosterBot slackPosterBot;
+	public static final String CONFIGFILE_FILENAME = "config.json";
 
 	public static void main(String[] args) {
 		System.setProperty("java.awt.headless", "true");
@@ -23,6 +27,15 @@ public class Main {
 
 		sessionManager = new SessionManager();
 		loadPreviouslyArchivedSessions();
+
+		slackPosterBot = null;
+		try {
+			slackPosterBot = new SlackPosterBot();
+		} catch (ConfigurationException e) {
+			e.printStackTrace();
+			System.out.println("Warning: Could not initialize SlackPosterBot. This is normal if you haven't configured it.");
+			System.out.println("Continuing without Slack functionality.");
+		}
 
 		Code.Main.setupLogger();
 		Code.Main.logger.getHandlers()[0].setLevel(Level.WARNING);
