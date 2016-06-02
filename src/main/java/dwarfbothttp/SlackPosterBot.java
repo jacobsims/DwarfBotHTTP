@@ -11,7 +11,9 @@ import org.apache.http.impl.client.HttpClients;
 import javax.naming.ConfigurationException;
 import java.io.*;
 import java.lang.reflect.Type;
+import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -45,10 +47,9 @@ public class SlackPosterBot {
 
 	private String slackChannelIdFromChannelName(String channelName) throws IOException, ConfigurationException {
 		try {
-			HttpGet httpGet = new HttpGet(
-					new URIBuilder("https://slack.com/api/channels.list")
-							.setParameter("token", slackToken)
-							.setParameter("exclude_archived", "1").build());
+			Map<String, String> getParams = new HashMap<>();
+			getParams.put("exclude_archived", "1");
+			HttpGet httpGet = new HttpGet(slackApiUri("channels.list", getParams));
 			HttpResponse response = httpClient.execute(httpGet);
 			try (
 					InputStream contentStream = response.getEntity().getContent();
@@ -67,11 +68,36 @@ public class SlackPosterBot {
 				}
 				throw new ConfigurationException("Could not find the channel named " + channelName);
 			}
-		} catch (URISyntaxException e) {
-			e.printStackTrace();
-			throw new Error("This shouldn't happen: URL syntax of API request is bad. Check surrounding code.");
 		} catch (ClassCastException e) {
 			throw new IOException("Could not read response from Slack", e);
+		}
+	}
+
+	private void postMessage(String message) throws IOException {
+		Map<String, String> getParams = new HashMap<>();
+		getParams.put("text", message);
+		getParams.put("channel", slackChannelId);
+		getParams.put("as_user", "true");
+		HttpGet httpGet = new HttpGet(slackApiUri("chat.postMessage", getParams));
+		HttpResponse response = httpClient.execute(httpGet);
+		try (
+				InputStream contentStream = response.getEntity().getContent();
+				Reader streamReader = new InputStreamReader(contentStream);
+				BufferedReader bufferedReader = new BufferedReader(streamReader);
+		) {
+			System.out.println(bufferedReader.readLine());
+		}
+	}
+
+	private URI slackApiUri(String endpoint, Map<String, String> params) {
+		try {
+			URIBuilder builder = new URIBuilder("https://slack.com/api/" + endpoint).addParameter("token", slackToken);
+			for (String param : params.keySet()) {
+				builder.addParameter(param, params.get(param));
+			}
+			return builder.build();
+		} catch (URISyntaxException e) {
+			throw new Error("This shouldn't happen: URL syntax of API request is bad. Check surrounding code.");
 		}
 	}
 
