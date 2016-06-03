@@ -18,6 +18,10 @@ allprojects {
     }
 }
 
+task docker(dependsOn: ':shadowJar', type: Exec) {
+    commandLine 'docker', 'build', '-t', 'dwarfbothttp', '.'
+}
+
 dependencies {
     compile 'com.github.jacobsims:DwarfBot:3c02c5cf813e925275a81e2c5f3fa5dbf7658f3b'
     compile 'com.sparkjava:spark-core:2.5'
