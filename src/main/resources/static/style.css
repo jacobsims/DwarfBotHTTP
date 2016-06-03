@@ -76,3 +76,8 @@ p, form {
 .clear {
     clear: both;
 }
+
+#tilesetImg {
+    background-color: rgba(8, 0, 0, 0.48);
+    background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFAAAACgAgMAAADm7QMnAAAADFBMVEV3d3dOTk5OTk5OTk60BIz+AAAABHRSTlP/bytS3QghxwAAAEVJREFUSMdjYA3FAA4Mq17tWrcalVhBtOBK7IL/McFfErSPWjRq0ahFoxaNWjRMLMJRoYzWR6MWjVo0atGoRaMWDYL6CAA67a9qo6Ce+AAAAABJRU5ErkJggg==");
+}
