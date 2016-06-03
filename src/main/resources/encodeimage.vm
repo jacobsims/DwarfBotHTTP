@@ -7,18 +7,20 @@
     <script>session = "${session}";</script>
     <script src="/failurereport.js"></script>
 </head>
-<body>
+<body onload="updateTilesetImg();">
 #include("header.vm")
 <div class="content-container">
     <p>Image decoded successfully!</p>
     <p>Choose a tileset to convert to:</p>
     <form action="/${session}/encodedimage.png" method="get">
-        <select name="tileset">
+        <select name="tileset" id="tileset" onchange="updateTilesetImg();">
             #foreach( $tileset in $tilesets )
                 <option value="${tileset.ImagePath}">${tileset.ImagePath}</option>
             #end
         </select>
         <input type="submit" value="Render">
+        <br/><br/>
+        <img id="tilesetImg" width="45%" height="45%"/>
     </form>
     #if ( ${failureReportsEnabled} )
         <p>
@@ -29,5 +31,10 @@
         </p>
     #end
 </div>
+<script>
+function updateTilesetImg() {
+     document.getElementById('tilesetImg').setAttribute('src', '/gettilesetimage.png?tilesetpath=' + encodeURIComponent(document.getElementById('tileset').value));
+}
+</script>
 </body>
 </html>
