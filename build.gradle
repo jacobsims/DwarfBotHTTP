@@ -23,7 +23,7 @@ task docker(dependsOn: ':shadowJar', type: Exec) {
 }
 
 dependencies {
-    compile 'com.github.jacobsims:DwarfBot:9c03637240bdea94df49682c64d50ffdb810c578'
+    compile 'com.github.jacobsims:DwarfBot:89d9fb110b3b92c41d309c178a217a7134fccad0'
     compile 'com.sparkjava:spark-core:2.5'
     compile 'com.sparkjava:spark-template-velocity:2.3'
     compile 'org.slf4j:slf4j-simple:1.7.21'
