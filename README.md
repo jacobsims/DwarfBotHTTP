@@ -1,4 +1,10 @@
-# DwarfBotHTTP
+# DEPRECATED, development continues at [Choco31415/DwarfBot](https://github.com/Choco31415/DwarfBot)
+
+---
+
+Old readme continues below.
+
+---
 
 A web interface for [DwarfBot](https://github.com/Choco31415/DwarfBot)
 
@@ -7,9 +13,14 @@ A web interface for [DwarfBot](https://github.com/Choco31415/DwarfBot)
 Requires Java 8
 
 ```sh
-$ git clone --recursive 'https://github.com/jacobsims/DwarfBotHTTP.git'
+$ git clone 'https://github.com/jacobsims/DwarfBotHTTP.git'
 $ cd DwarfBotHTTP
 $ ./gradlew run # Now go to http://localhost:4567
+```
+
+```sh
+$ ./gradlew shadowJar # build a single jar with all dependencies contained
+$ java -jar build/libs/DwarfBotHTTP-all.jar # run it
 ```
 
 ### Slack
